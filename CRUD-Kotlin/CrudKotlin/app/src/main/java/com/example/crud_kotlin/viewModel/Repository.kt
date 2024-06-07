@@ -4,6 +4,7 @@ import com.example.crud_kotlin.RoomBD.Pessoa
 import com.example.crud_kotlin.RoomBD.PessoaDataBase
 
 class Repository(private val db: PessoaDataBase) {
+    //Utilizando os comandos de CRUD com base no que vai ser enviado do form
     suspend fun upsertPessoa(pessoa: Pessoa){
         db.pessoaDao().updatePessoa(pessoa)
     }

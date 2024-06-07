@@ -43,6 +43,7 @@ import com.example.crud_kotlin.viewModel.Repository
 
 class MainActivity : ComponentActivity() {
 
+    //Criando o banco de dados com base na classe de criação, ainda com o seu nome
     private val db by lazy {
         Room.databaseBuilder(
             applicationContext,
@@ -51,7 +52,7 @@ class MainActivity : ComponentActivity() {
         ).build()
     }
 
-
+    //É utilizado para criar a view do Model
     private val viewModel by viewModels<PessoaViewModel>(
         factoryProducer = {
             object : ViewModelProvider.Factory{
@@ -79,6 +80,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun App(viewModel: PessoaViewModel, mainActivity: MainActivity){
+    //Variaveis mutaveis para setar os form
     var nome by remember {
         mutableStateOf("")
     }
@@ -87,14 +89,18 @@ fun App(viewModel: PessoaViewModel, mainActivity: MainActivity){
         mutableStateOf("")
     }
 
+    //juntando as var
     val pessoa = Pessoa(
         nome,
         telefone
     )
 
+    //Colocando em um vetor
     var pessoaList by remember{
         mutableStateOf(listOf<Pessoa>())
     }
+
+    //
 viewModel.getPessoa().observe(mainActivity){
     pessoaList = it
 }
@@ -152,6 +158,7 @@ viewModel.getPessoa().observe(mainActivity){
                 .padding(20.dp),
             Arrangement.Center
         ) {
+            //Botão de cadastrar
          Button(onClick = {
              viewModel.upsertPessoa(pessoa)
          }) {
@@ -162,6 +169,7 @@ viewModel.getPessoa().observe(mainActivity){
 
         Divider()
         LazyColumn {
+            //SELECT da aplicação
             items(pessoaList){pessoa ->
                 Row(
                     Modifier
