@@ -1,7 +1,9 @@
 package com.example.firebase_crud
 
+import android.content.ContentValues
 import android.os.Bundle
 import android.renderscript.ScriptGroup.Input
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
@@ -17,17 +19,25 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.test.espresso.base.Default
 import com.example.firebase_crud.ui.theme.FirebaseCrudTheme
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import java.time.format.TextStyle
+import kotlin.collections.hashMapOf as hashMapOf
 
 class MainActivity : ComponentActivity() {
+    private val db = Firebase.firestore
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -37,7 +47,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    App()
+                    App(db)
                 }
             }
         }
@@ -45,7 +55,9 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun App(){
+fun App(db : FirebaseFirestore){
+    var nome by remember { mutableStateOf("")  }
+    var telefone by remember { mutableStateOf("")  }
     Column(
         Modifier
             .fillMaxWidth()
@@ -89,8 +101,8 @@ fun App(){
 
             ) {
                 TextField(
-                    value = "",
-                    onValueChange = {} ,
+                    value = nome,
+                    onValueChange = { nome = it } ,
                     label = { Text(text = "Nome:")}
 
                 )
@@ -122,9 +134,8 @@ fun App(){
 
             ) {
                 TextField(
-                    value = "",
-                    onValueChange = {} ,
-                    ,
+                    value = telefone,
+                    onValueChange = { telefone = it} ,
                     label = { Text(text = "Telefone:")}
 
                 )
@@ -146,24 +157,24 @@ fun App(){
             Arrangement.Center
 
         ) {
-            Button(onClick = { /*TODO*/ }) {
+            Button(onClick = {
+
+                val city =  hashMapOf(
+                    "nome" to nome,
+                    "telefone" to telefone
+                )
+
+                db.collection("pessoas").document("PrimeiroCliente")
+                    .set(city)
+                    .addOnSuccessListener { Log.d(ContentValues.TAG, "DocumentSnapshot successfully written") }
+                    .addOnFailureListener { e-> Log.w(ContentValues.TAG, "Error ", e) }
+
+            }) {
                 Text(text = "Cadastrar")
+
             }
         }
     }
 }
 
-@Composable
-@Preview
-fun AppPreview(){
-    FirebaseCrudTheme {
-        // A surface container using the 'background' color from the theme
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
-            App()
-        }
-    }
-}
 
