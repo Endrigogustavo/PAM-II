@@ -1,8 +1,8 @@
 package com.example.firebase_crud
 
 import android.content.ContentValues
+import android.content.ContentValues.TAG
 import android.os.Bundle
-import android.renderscript.ScriptGroup.Input
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -24,16 +23,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.firebase_crud.ui.theme.FirebaseCrudTheme
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import java.time.format.TextStyle
 import kotlin.collections.hashMapOf as hashMapOf
 
 class MainActivity : ComponentActivity() {
@@ -58,6 +54,7 @@ class MainActivity : ComponentActivity() {
 fun App(db : FirebaseFirestore){
     var nome by remember { mutableStateOf("")  }
     var telefone by remember { mutableStateOf("")  }
+
     Column(
         Modifier
             .fillMaxWidth()
@@ -173,8 +170,43 @@ fun App(db : FirebaseFirestore){
                 Text(text = "Cadastrar")
 
             }
+
+            Row (
+                Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp)
+            ){
+            Row(Modifier.fillMaxWidth()) {
+                Column(
+                    Modifier.fillMaxWidth(0.3f)
+                ) {
+                    db.collection("pessoas")
+                        .get()
+                        .addOnSuccessListener { documents ->
+                            for (document in documents){
+                                val lista = hashMapOf(
+                                    "nome" to "${document.data.get("nome")}",
+                                    "telefone" to "${document.data.get("telefone")}"
+                                )
+                                Log.d(TAG, "${document.id} => ${document.data}")
+                            }
+
+                        }
+
+
+                        .addOnFailureListener { exception ->
+                            Log.w(TAG, "Error", exception)
+                        }
+                    
+
+
+                }
+            }
+
+            }
         }
     }
 }
+
 
 
